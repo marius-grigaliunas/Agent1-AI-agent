@@ -22,5 +22,5 @@ def get_files_info(working_directory, directory="."):
 
         return ""
 
-    except:
-        raise Exception("Error: Something went wrong.")
+    except Exception as e:
+        return (f"Error: executing Python file: {e}")

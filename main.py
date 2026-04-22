@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from google import genai
 import argparse
 from google.genai import types
+import prompts
 
 load_dotenv()
 gemini_api = os.environ.get("GEMINI_API_KEY")
@@ -22,8 +23,15 @@ def main():
 
     messages = [types.Content(role="user", parts=[types.Part(text=args.user_prompt)])]
 
-    # response = client.models.generate_content(model="gemini-2.5-flash", contents=messages)
-    response = client.models.generate_content(model="gemini-3.1-flash-lite-preview", contents=messages)
+    # response = client.models.generate_content(model="gemini-3.1-flash-lite-preview", contents=messages)
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=messages,
+        config=types.GenerateContentConfig(
+            system_instruction=prompts.system_prompt,
+            temperature=0
+            ),
+        )
  
     prompt_tokens = response.usage_metadata.prompt_token_count  # pyright: ignore[reportOptionalMemberAccess]
     response_tokens = response.usage_metadata.candidates_token_count  # pyright: ignore[reportOptionalMemberAccess]

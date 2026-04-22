@@ -23,5 +23,5 @@ def get_file_content(working_directory, filepath):
 
         return file_content_string
 
-    except:
-        raise Exception("Error: Something went wrong.")
+    except Exception as e:
+        return (f"Error: executing Python file: {e}")

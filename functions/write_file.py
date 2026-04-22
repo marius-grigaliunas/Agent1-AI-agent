@@ -24,5 +24,5 @@ def write_file(working_directory, filepath, content):
 
         return f'Successfully wrote to "{filepath}" ({len(content)} characters written)'
 
-    except:
-        raise Exception("Error: Something went wrong.")
+    except Exception as e:
+        return (f"Error: executing Python file: {e}")
