@@ -1,6 +1,8 @@
 from ntpath import isdir
 import os
 
+from google.genai import types
+
 def write_file(working_directory, filepath, content):
     try:
         abs_working_directory = os.path.abspath(working_directory)
@@ -26,3 +28,22 @@ def write_file(working_directory, filepath, content):
 
     except Exception as e:
         return (f"Error: executing Python file: {e}")
+
+schema_write_file = types.FunctionDeclaration(
+    name="write_file",
+    description="overwrites the specified file, relative to the working directory, with the specified contents",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "filepath" : types.Schema(
+                type= types.Type.STRING,
+                description="File path to list the contents of, relative to the working directory (default is the working directory itself)"
+            ),
+            "content": types.Schema(
+                type = types.Type.STRING,
+                description="string of contents to overwrite the file with."
+            )
+        },
+        required=["filepath", "content"]
+    )
+)

@@ -1,4 +1,6 @@
 import os
+
+from google.genai.models import types
 from config import MAX_CHARS
 
 def get_file_content(working_directory, filepath):
@@ -25,3 +27,18 @@ def get_file_content(working_directory, filepath):
 
     except Exception as e:
         return (f"Error: executing Python file: {e}")
+
+schema_get_file_content = types.FunctionDeclaration(
+    name="get_file_content",
+    description="returns the specified file's content with the limit of MAX_CHARS variable, file being relative tot the working directory",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "filepath" : types.Schema(
+                type= types.Type.STRING,
+                description="File path to list the contents of, relative to the working directory (default is the working directory itself)"
+            )
+        },
+        required=["filepath"]
+    )
+)

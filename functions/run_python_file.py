@@ -3,6 +3,8 @@ from ast import arg
 import os
 import subprocess
 
+from google.genai import types
+
 
 def run_python_file(working_directory, filepath, args=None):
     try:
@@ -41,3 +43,23 @@ def run_python_file(working_directory, filepath, args=None):
         
     except Exception as e:
         return (f"Error: executing Python file: {e}")
+
+schema_run_python_file = types.FunctionDeclaration(
+    name="run_python_file",
+    description="runs the specified python file, relative to the working directory, and any stated arguments returns and output string, consisting of the return code (if nonzero), STDOUT and STDERR",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "filepath" : types.Schema(
+                type= types.Type.STRING,
+                description="File path to list the contents of, relative to the working directory (default is the working directory itself)"
+            ),
+            "args": types.Schema(
+                type=types.Type.ARRAY,
+                items=types.Schema(type=types.Type.STRING),
+                description="Optional command-line arguments passed to the Python file."
+            )
+        },
+        required=["filepath"]
+    )
+)
