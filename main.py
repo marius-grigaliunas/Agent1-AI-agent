@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from google import genai
 import argparse
 from google.genai import types
-from available_functions import available_functions
+from available_functions import available_functions, call_function
 import prompts
 
 load_dotenv()
@@ -22,31 +22,46 @@ def main():
 
     prompt = args.user_prompt
 
-    messages = [types.Content(role="user", parts=[types.Part(text=args.user_prompt)])]
+    if args.verbose:
+        print(f"User prompt: {prompt}")
 
-    # response = client.models.generate_content(model="gemini-2.5-flash", contents=messages)
     response = client.models.generate_content(
         model="gemini-3.1-flash-lite-preview",
-        contents=messages,
+        contents=[types.Content(role="user", parts=[types.Part(text=args.user_prompt)])],
         config=types.GenerateContentConfig(
             tools=[available_functions],
             system_instruction=prompts.system_prompt,
-            temperature=0
-            ),
-        )
- 
+            temperature=0,
+        ),
+    )
+
     prompt_tokens = response.usage_metadata.prompt_token_count  # pyright: ignore[reportOptionalMemberAccess]
     response_tokens = response.usage_metadata.candidates_token_count  # pyright: ignore[reportOptionalMemberAccess]
 
     if args.verbose:
-        print(f"User prompt: {prompt}")
         print(f"Prompt tokens: {prompt_tokens}")
         print(f"Response tokens: {response_tokens}")
         print("Response:")
 
+    function_results = []
+
     if response.function_calls:
         for function in response.function_calls:
-            print(f"Calling function: {function.name}({function.args})")
+            function_call_result = call_function(function, args.verbose)
+
+            if not function_call_result.parts:
+                raise Exception("response doesn't contain any parts")
+
+            if not function_call_result.parts[0].function_response:
+                raise Exception("function response is None")
+
+            if not function_call_result.parts[0].function_response.response:
+                raise Exception("function result is None")
+
+            function_results.append(function_call_result.parts[0])
+
+            if args.verbose:
+                print(f"-> {function_call_result.parts[0].function_response.response}")
     else:
         print(response.text)
 
