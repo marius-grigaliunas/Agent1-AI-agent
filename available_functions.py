@@ -30,9 +30,12 @@ def call_function(function_call, verbose=False):
         return types.Content(
             role="tool",
                 parts=[
-                    types.Part.from_function_response(
-                        name=function_name,
-                        response={"error": f"Unknown function: {function_name}"},
+                    types.Part(
+                        function_response=types.FunctionResponse(
+                            id=function_call.id,
+                            name=function_name,
+                            response={"error": f"Unknown function: {function_name}"},
+                        )
                     )
                 ],
         )
@@ -51,9 +54,12 @@ def call_function(function_call, verbose=False):
     return types.Content(
         role="tool",
         parts=[
-            types.Part.from_function_response(
-                name=function_name,
-                response={"result": function_result}
+            types.Part(
+                function_response=types.FunctionResponse(
+                    id=function_call.id,
+                    name=function_name,
+                    response={"result": function_result}
+                )
             )
         ]
     )

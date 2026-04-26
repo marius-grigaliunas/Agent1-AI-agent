@@ -15,12 +15,16 @@ def get_files_info(working_directory, directory="."):
             return f'Error: "{directory}" is not a directory'
 
         dir_list = os.listdir(target_dir)
-
-        print(f"Result for '{directory}'")
+        lines = [f"Result for '{directory}'"]
         for item in dir_list:
-            print(f"- {item}: file_size={os.path.getsize(target_dir + "/" + item)}, is_dir={os.path.isdir(target_dir + "/" + item)}")
+            item_path = os.path.join(target_dir, item)
+            lines.append(
+                f"- {item}: file_size={os.path.getsize(item_path)}, is_dir={os.path.isdir(item_path)}"
+            )
 
-        return ""
+        result_text = "\n".join(lines)
+        print(result_text)
+        return result_text
 
     except Exception as e:
         return (f"Error: executing Python file: {e}")
